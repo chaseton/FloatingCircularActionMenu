@@ -34,6 +34,8 @@ public class MainActivity extends Activity {
             }
         });
         startService(new Intent(this, FloatyService.class));
+        window.setKeepToSideHiddenWidthRadio(0.5f);
         FloatyService.addWindow(window);
+
     }
 }

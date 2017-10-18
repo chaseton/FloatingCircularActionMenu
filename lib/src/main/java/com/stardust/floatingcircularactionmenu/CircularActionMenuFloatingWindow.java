@@ -26,6 +26,7 @@ public class CircularActionMenuFloatingWindow implements FloatyWindow {
     private WindowManager.LayoutParams mActionViewWindowLayoutParams;
     private WindowManager.LayoutParams mMenuWindowLayoutParams;
     private View.OnClickListener mActionViewOnClickListener;
+    private float mKeepToSideHiddenWidthRadio;
 
 
     public CircularActionMenuFloatingWindow(CircularActionMenuFloaty floaty) {
@@ -51,12 +52,18 @@ public class CircularActionMenuFloatingWindow implements FloatyWindow {
 
     private void initGestures() {
         mDragGesture = new BounceDragGesture(mActionViewWindowBridge, mCircularActionView);
-        mDragGesture.setKeepToSideHiddenWidthRadio(0);
+        mDragGesture.setKeepToSideHiddenWidthRadio(mKeepToSideHiddenWidthRadio);
     }
 
     private void initWindowBridge() {
         mActionViewWindowBridge = new WindowBridge.DefaultImpl(mActionViewWindowLayoutParams, mWindowManager, mCircularActionView);
         mMenuWindowBridge = new WindowBridge.DefaultImpl(mMenuWindowLayoutParams, mWindowManager, mCircularActionMenu);
+    }
+
+    public void setKeepToSideHiddenWidthRadio(float keepToSideHiddenWidthRadio) {
+        mKeepToSideHiddenWidthRadio = keepToSideHiddenWidthRadio;
+        if (mDragGesture != null)
+            mDragGesture.setKeepToSideHiddenWidthRadio(mKeepToSideHiddenWidthRadio);
     }
 
     private WindowManager.LayoutParams createWindowLayoutParams() {

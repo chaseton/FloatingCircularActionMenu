@@ -118,7 +118,7 @@ public class CircularActionMenu extends FrameLayout {
             View item = getItemAt(i);
             item.animate()
                     .translationXBy(direction * mItemExpandedPositionOffsets[i].x)
-                    .translationYBy(direction * mItemExpandedPositionOffsets[i].y)
+                    .translationYBy(mItemExpandedPositionOffsets[i].y)
                     .setListener(listener)
                     .setDuration(mDuration)
                     .start();
@@ -221,7 +221,6 @@ public class CircularActionMenu extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         calcExpandedPositions();
         if (mExpandedHeight == -1 || mExpandedWidth == -1) {
