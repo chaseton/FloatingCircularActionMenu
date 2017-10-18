@@ -73,6 +73,14 @@ public class CircularActionMenu extends FrameLayout {
         if (angleInDegree != 0) {
             mAngle = (float) Math.toRadians(angleInDegree);
         }
+        for (int i = 0; i < getItemCount(); i++) {
+            View v = getItemAt(i);
+            FrameLayout.LayoutParams params = (LayoutParams) v.getLayoutParams();
+            params.gravity = Gravity.START | Gravity.LEFT | Gravity.CENTER_VERTICAL;
+            // FIXME: 2017/10/17 Not working
+            updateViewLayout(v, params);
+        }
+        requestLayout();
     }
 
     public float getRadius() {
@@ -92,6 +100,7 @@ public class CircularActionMenu extends FrameLayout {
     }
 
     public void expand(int direction) {
+        setVisibility(VISIBLE);
         mExpanding = true;
         Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
             @Override
@@ -107,7 +116,6 @@ public class CircularActionMenu extends FrameLayout {
         direction = (direction == Gravity.RIGHT ? 1 : -1);
         for (int i = 0; i < getItemCount(); i++) {
             View item = getItemAt(i);
-            item.setVisibility(VISIBLE);
             item.animate()
                     .translationXBy(direction * mItemExpandedPositionOffsets[i].x)
                     .translationYBy(direction * mItemExpandedPositionOffsets[i].y)
@@ -139,9 +147,7 @@ public class CircularActionMenu extends FrameLayout {
             public void onAnimationEnd(Animator animation) {
                 mCollapsing = false;
                 mExpanded = false;
-                for (int i = 0; i < getItemCount(); i++) {
-                    getItemAt(i).setVisibility(GONE);
-                }
+                setVisibility(GONE);
                 if (mOnStateChangeListener != null) {
                     mOnStateChangeListener.onCollapsed(CircularActionMenu.this);
                 }
@@ -200,11 +206,11 @@ public class CircularActionMenu extends FrameLayout {
         int maxX = 0;
         int maxY = 0;
         int minY = Integer.MAX_VALUE;
+        int maxWidth = 0;
         for (int i = 0; i < getItemCount(); i++) {
             View item = getItemAt(i);
-            int x = (int) (mItemExpandedPositionOffsets[i].x + item.getMeasuredWidth());
-            int y = (int) (mItemExpandedPositionOffsets[i].y - item.getMeasuredHeight());
-            maxX = Math.max(x, maxX);
+            maxWidth = Math.max(item.getMeasuredWidth(), maxWidth);
+            maxX = Math.max((int) (mItemExpandedPositionOffsets[i].x + item.getMeasuredWidth()), maxX);
             // FIXME: 2017/9/26 这样算出来的高度略大
             maxY = Math.max((int) (mItemExpandedPositionOffsets[i].y + item.getMeasuredHeight()), maxY);
             minY = Math.min((int) (mItemExpandedPositionOffsets[i].y - item.getMeasuredHeight()), minY);
@@ -221,7 +227,7 @@ public class CircularActionMenu extends FrameLayout {
         if (mExpandedHeight == -1 || mExpandedWidth == -1) {
             calcExpandedSize();
         }
-        setMeasuredDimension(mExpandedWidth, mExpandedHeight);
+        setMeasuredDimension(2 * mExpandedWidth, mExpandedHeight);
         if (mOnStateChangeListener != null) {
             mOnStateChangeListener.onMeasured(this);
         }

@@ -26,6 +26,7 @@ public class DragGesture extends GestureDetector.SimpleOnGestureListener {
     private boolean mAutoKeepToEdge;
     private float mPressedAlpha = 0.7f;
     private float mUnpressedAlpha = 1.0f;
+    private boolean mEnabled = true;
 
     public DragGesture(WindowBridge windowBridge, View view) {
         mWindowBridge = windowBridge;
@@ -48,6 +49,14 @@ public class DragGesture extends GestureDetector.SimpleOnGestureListener {
                 return true;
             }
         });
+    }
+
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
     }
 
     protected boolean onTheEdge() {
@@ -99,6 +108,9 @@ public class DragGesture extends GestureDetector.SimpleOnGestureListener {
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        if (!mEnabled) {
+            return false;
+        }
         mWindowBridge.updatePosition(mInitialX + (int) ((e2.getRawX() - mInitialTouchX)),
                 mInitialY + (int) ((e2.getRawY() - mInitialTouchY)));
         mView.setAlpha(mPressedAlpha);
