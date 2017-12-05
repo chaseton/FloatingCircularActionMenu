@@ -18,6 +18,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Created by Stardust on 2017/9/25.
  */
@@ -36,8 +38,36 @@ public class CircularActionMenu extends FrameLayout {
         void onMeasured(CircularActionMenu menu);
     }
 
+    public static class OnStateChangeListenerAdapter implements OnStateChangeListener {
+
+        @Override
+        public void onExpanding(CircularActionMenu menu) {
+
+        }
+
+        @Override
+        public void onExpanded(CircularActionMenu menu) {
+
+        }
+
+        @Override
+        public void onCollapsing(CircularActionMenu menu) {
+
+        }
+
+        @Override
+        public void onCollapsed(CircularActionMenu menu) {
+
+        }
+
+        @Override
+        public void onMeasured(CircularActionMenu menu) {
+
+        }
+    }
+
     private PointF[] mItemExpandedPositionOffsets;
-    private OnStateChangeListener mOnStateChangeListener;
+    private CopyOnWriteArrayList<OnStateChangeListener> mOnStateChangeListeners = new CopyOnWriteArrayList<>();
     private boolean mExpanded;
     private boolean mExpanding = false;
     private boolean mCollapsing = false;
@@ -107,8 +137,8 @@ public class CircularActionMenu extends FrameLayout {
             public void onAnimationEnd(Animator animation) {
                 mExpanding = false;
                 mExpanded = true;
-                if (mOnStateChangeListener != null) {
-                    mOnStateChangeListener.onExpanded(CircularActionMenu.this);
+                for (OnStateChangeListener l : mOnStateChangeListeners) {
+                    l.onExpanded(CircularActionMenu.this);
                 }
             }
         };
@@ -124,8 +154,8 @@ public class CircularActionMenu extends FrameLayout {
                     .start();
             item.startAnimation(scaleAnimation);
         }
-        if (mOnStateChangeListener != null) {
-            mOnStateChangeListener.onExpanding(this);
+        for (OnStateChangeListener l : mOnStateChangeListeners) {
+            l.onExpanding(CircularActionMenu.this);
         }
     }
 
@@ -148,8 +178,8 @@ public class CircularActionMenu extends FrameLayout {
                 mCollapsing = false;
                 mExpanded = false;
                 setVisibility(GONE);
-                if (mOnStateChangeListener != null) {
-                    mOnStateChangeListener.onCollapsed(CircularActionMenu.this);
+                for (OnStateChangeListener l : mOnStateChangeListeners) {
+                    l.onCollapsed(CircularActionMenu.this);
                 }
             }
         };
@@ -166,13 +196,17 @@ public class CircularActionMenu extends FrameLayout {
                     .start();
             item.startAnimation(scaleAnimation);
         }
-        if (mOnStateChangeListener != null) {
-            mOnStateChangeListener.onCollapsing(this);
+        for (OnStateChangeListener l : mOnStateChangeListeners) {
+            l.onCollapsing(CircularActionMenu.this);
         }
     }
 
-    public void setOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
-        mOnStateChangeListener = onStateChangeListener;
+    public void addOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
+        mOnStateChangeListeners.add(onStateChangeListener);
+    }
+
+    public boolean removeOnStateChangeListener(OnStateChangeListener listener) {
+        return mOnStateChangeListeners.remove(listener);
     }
 
     public boolean isExpanded() {
@@ -227,8 +261,8 @@ public class CircularActionMenu extends FrameLayout {
             calcExpandedSize();
         }
         setMeasuredDimension(2 * mExpandedWidth, mExpandedHeight);
-        if (mOnStateChangeListener != null) {
-            mOnStateChangeListener.onMeasured(this);
+        for (OnStateChangeListener listener : mOnStateChangeListeners) {
+            listener.onMeasured(this);
         }
     }
 

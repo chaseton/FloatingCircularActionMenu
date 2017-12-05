@@ -24,8 +24,8 @@ public class DragGesture extends GestureDetector.SimpleOnGestureListener {
     private float mInitialTouchY;
     private View.OnClickListener mOnClickListener;
     private boolean mAutoKeepToEdge;
-    private float mPressedAlpha = 0.7f;
-    private float mUnpressedAlpha = 1.0f;
+    private float mPressedAlpha = 1.0f;
+    private float mUnpressedAlpha = 0.4f;
     private boolean mEnabled = true;
 
     public DragGesture(WindowBridge windowBridge, View view) {
